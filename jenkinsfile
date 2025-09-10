@@ -1,0 +1,45 @@
+ptpeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: "maater", url: "https://github.com/siddha200340/restaurent-app.git"
+            }
+        }
+        stage('install dependencies') {
+            steps {
+                bat "npm install"
+            }
+        }
+        stage('Test') {
+            steps {
+                bat "npm test"
+            }
+        }
+        stage('Build') {
+            steps {
+                bat "docker build -t restaurent-app ."
+            }
+        }
+        stage('Run') {
+            steps {
+                bat "docker rm -f restaurent-app-container"
+                bat "docker run -d -p 3000:3000 --name restaurent-app-container restaurent-app"
+            }
+        }
+    }
+    post {
+        always {
+            echo 'Cleaning the workspace...'
+            deleteDir()
+        
+        }
+        success {
+           
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed! Check logs'
+        }
+    }
+}
