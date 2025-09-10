@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+const server = require("../server"); // import server
 const request = require("supertest");
 const app = require("../app");
 
@@ -19,4 +21,7 @@ describe("Integration Tests - Menu & Orders", () => {
     expect(res.body.message).toContain("Order placed");
   });
 });
-
+afterAll(async () => {
+  await mongoose.connection.close(); // close DB
+  server.close(); // close server
+});
