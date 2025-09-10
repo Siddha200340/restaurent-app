@@ -1,33 +1,34 @@
+// app.js
 require("dotenv").config();
 const express = require("express");
+const mongoose = require("mongoose");
 
 const app = express();
 app.use(express.json());
 
-// Sample routes
+// MongoDB connection
+const mongoUrl = process.env.MONGO_URL || "mongodb://localhost:27017/mydb";
+mongoose.connect(mongoUrl, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+// Simple model for testing
+const Item = mongoose.model("Item", new mongoose.Schema({ name: String }));
+
+// Routes
 app.get("/", (req, res) => {
-  res.send("🍴 Welcome to the Restaurant API!");
+  res.send("🚀 Node.js + MongoDB App running!");
+});
+app.post("/items", async (req, res) => {
+  const item = new Item({ name: req.body.name });
+  await item.save();
+  res.status(201).json(item);
+});
+app.get("/items", async (req, res) => {
+  const items = await Item.find();
+  res.json(items);
 });
 
-app.get("/menu", (req, res) => {
-  res.json([
-    { id: 1, name: "🍝 Spaghetti" },
-    { id: 2, name: "🍰 Cake" }
-  ]);
-});
-
-app.post("/order", (req, res) => {
-  if (!req.body.item) {
-    return res.status(400).json({ error: "No item ordered" });
-  }
-  res.status(201).json({ message: `✅ Order placed for ${req.body.item}` });
-});
-
-// Start server
-const PORT = process.env.APP_PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🌍 Restaurant API running on port ${PORT}`);
-});
-
-module.exports = app; // Export for testing
+module.exports = app; // ✅ export only app
 
