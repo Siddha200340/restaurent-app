@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: "maater", url: "https://github.com/siddha200340/restaurent-app.git"
+                git branch: "master", url: "https://github.com/siddha200340/restaurent-app.git"
             }
         }
         stage('install dependencies') {
